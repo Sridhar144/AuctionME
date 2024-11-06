@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit User Name</title>
+    <style>
+       
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+
+        nav {
+            background-color: #444;
+            padding: 10px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        main {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        }
+
+        form label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        form input[type="text"],
+        form input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        form button[type="submit"] {
+            background-color: #333;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        form button[type="submit"]:hover {
+            background-color: #555;
+        }
+
+        .auction-item {
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin: 10px 0;
+        background-color: #f7f7f7;
+        border-radius: 5px;
+    }
+    
+    .auction-item h2 {
+        font-size: 24px;
+        color: #333;
+    }
+    
+    .auction-item p {
+        font-size: 16px;
+        color: #666;
+    }
+
+    .bid-form {
+        margin-top: 10px;
+    }
+
+    .bid-input {
+        width: 100px;
+        padding: 5px;
+        margin-right: 10px;
+    }
+
+    .bid-button {
+        padding: 5px 10px;
+        background-color: #007BFF;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .bid-button:hover {
+        background-color: #0056b3;
+    }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Welcome</h1>
+    </header>
+    
+    <main>
+        <!-- Display the current user's name -->
+        <p>User Name: <span id="currentName">{{ name }}</span></p>
+        <p>Password: <span id="currentPassword">{{ password }}</span></p>
+        <p>Available Login Tokens: {{ available_tokens }}</span></p>
+        <hr>
+        <!-- Form for updating the user's name -->
+        <form id="updateForm" action="{% url 'update_profile' %}" method="post">
+            <h1>Edit Details</h1>
+            {% csrf_token %}
+            <label for="newName">New Name:</label>
+            <input type="text" id="newName" name="newName" required>
+            <label for="newPassword">New Password:</label>
+            <input type="password" id="newPassword" name="newPassword" required>
+            <button type="submit">Update</button>
+        </form>
+
+        <hr>
+        
+        <h1>Available Items in Auctions</h1>
+        {% for item in auction_items %}
+            <div class="auction-item">
+                <h2>{{ item.item_name }}</h2>
+                <p>Start Time: {{ item.start_time }}</p>
+                <p>End Time: {{ item.end_time }}</p>
+                <p>Start Price: {{ item.start_price }}</p>
+
+            {% if item.end_time < now %}
+                {% if item.highest_bid %}
+                    <p>Winner: {{ item.user.name }} with bid of {{ highest_bid }}</p>
+                {% else %}
+                    <p>No bids for this item</p>
+                {% endif %}
+            {% else %}
+                <!-- Bid Form -->
+                <form id="bid-form-{{ item.id }}" class="bid-form" action="{% url 'place_bid' %}" method="post">
+                    {% csrf_token %}
+                    <label for="bid-{{ item.id }}">Your Bid:</label>
+                    <input type="number" id="bid-{{ item.id }}" class="bid-input" name="bid" required>
+                    <input type="hidden" name="item_id" value="{{ item.id }}">
+                    <button class="bid-button" type="submit">Bid</button>
+                </form>
+            {% endif %}
+            </div>
+        {% endfor %}
+    </main>
+    
+    <script>
+        
+    </script>
+</body>
+</html>
